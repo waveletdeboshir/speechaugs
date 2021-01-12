@@ -1,5 +1,5 @@
-pip==19.0.3
-wheel==0.33.1
+pip==20.3.3
+wheel==0.36.2
 numpy==1.19.5
 albumentations==0.5.2
 librosa==0.8.0
