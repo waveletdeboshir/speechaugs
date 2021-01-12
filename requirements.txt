@@ -1,0 +1,8 @@
+pip==19.0.3
+wheel==0.33.1
+numpy==1.19.5
+albumentations==0.5.2
+librosa==0.8.0
+colorednoise==1.1.1
+torch==1.7.1
+torchaudio==0.7.2
