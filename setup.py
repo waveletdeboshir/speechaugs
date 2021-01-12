@@ -22,7 +22,7 @@ setup(
     author="Darya Vozhdaeva",
     author_email="daria-vozhdaeva@yandex.ru",
     description="Waveform augmentations",
-    long_description=read('README.txt'),
+    long_description=read('README.md'),
     long_description_content_type="text/markdown",
     url="https://github.com/waveletdeboshir/speechaugs/",
     packages=find_packages(),
