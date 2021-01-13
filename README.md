@@ -26,7 +26,7 @@ Shift a waveform forwards in time.
 </p>
 
 ## Pitch Shift
-Shift a pitch by *n_steps* semitones. Is implemented using <a href="https://librosa.org/doc/main/generated/librosa.effects.time_stretch.html"> *librosa.effects.time_stretch*</a>. 
+Shift a pitch by *n_steps* semitones. Is implemented using <a href="https://librosa.org/doc/main/generated/librosa.effects.pitch_shift.html"> *librosa.effects.time_stretch*</a>. 
 
 The work of PitchShift can be better illustrated on the MelSpectrograms of waveforms. 
 
