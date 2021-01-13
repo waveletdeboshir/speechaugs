@@ -15,7 +15,7 @@ def get_version():
             return eval(line.split('=')[1])
 
 
-requirements = ["librosa>=0.6.1,<=0.8.0", "colorednoise>=1.1.1", "albumentations>=0.5.2"]
+requirements = ["librosa>=0.6.1,<=0.8.0", "colorednoise>=1.1.1", "albumentations>=0.1.12"]
 
 setup(
     name="speechaugs",
