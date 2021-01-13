@@ -3,8 +3,12 @@ Augmentations for single-channel waveforms.
 ***
 ### Current augmentations:
 * Time Stretch
+* Forward Time Shift
 * Pitch Shift
 * Colored Noise (white, pink, brown, blue, violet, grey)
+* Zero Samples
+* Clipping samples
+* Inversion
 ***
 ## Installation
 `pip install speechaugs`
@@ -15,6 +19,11 @@ Stretch a wavefom with randomly chosen rate. Is implemented using <a href="https
 <img src="images/timestretch.png" width="700" height="300"/> 
 </p>
 
+## Forward Time Shift
+
+<p>
+<img src="images/forwardtimeshift.png" width="400" height="250"/> 
+</p>
 ## Pitch Shift
 Shift a pitch by *n_steps* semitones. Is implemented using <a href="https://librosa.org/doc/main/generated/librosa.effects.time_stretch.html"> *librosa.effects.time_stretch*</a>. 
 
@@ -33,7 +42,7 @@ The work of PitchShift can be better illustrated on the MelSpectrograms of wavef
 ## Colored Noise
 Color of noise depends on the spectral density of the noise. You can go to <a href="https://en.wikipedia.org/wiki/Colors_of_noise">wiki page</a> for more information.
 
-This class is written using <a href="https://github.com/felixpatzelt/colorednoise">colorednoise package</a>. The color of noise is randomly choosen.
+This class is implemented using <a href="https://github.com/felixpatzelt/colorednoise">colorednoise package</a>. The color of noise is randomly choosen.
 
 **White Noise**
 <p>
@@ -45,11 +54,23 @@ This class is written using <a href="https://github.com/felixpatzelt/colorednois
 <img src="images/brownnoise.png" width="600" height="300" title="Brown Noise"/> 
 </p>
 
+## Zero Samples
+
+## Clipping Samples
+
+<p>
+<img src="images/clipping.png" width="400" height="250"/> 
+</p>
+## Inversion
+
+<p>
+<img src="images/inversion.png" width="400" height="250"/> 
+</p>
 ***
 ## Usage example
 Import:
 ```python
-from speechaugs import TimeStretch, PitchShift, ColoredNoise
+from speechaugs import TimeStretchLibrosa, ForwardTimeShift, PitchShiftLibrosa, ColoredNoise, Inversion, ZeroSamples, ClippingSamples
     
 import torch, torchaudio
 import albumentations as A
@@ -60,8 +81,10 @@ Usage:
 ex_waveform, sr = torchaudio.load('audio_filename')
 
 transforms = A.Compose([
-    TimeStretch(p=0.5, sr=sr),
-    PitchShift(p=0.5, sr=sr),
+    ForwardTimeShift(p=0.5),
+    Inversion(p=0.5),
+    A.OneOf([ZeroSamples(p=0.5), ClippingSamples(p=0.5)], p=0.5),
+    A.OneOf([TimeStretchLibrosa(p=0.5), PitchShiftLibrosa(p=0.5)], p = 0.5),
     ColoredNoise(p=0.5)
 ], p=1.0)
 
