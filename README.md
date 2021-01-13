@@ -1,5 +1,5 @@
 # speechaugs
-Augmentations for single-channel *waveforms* for *speech recognition* models.
+Single-channel *waveforms* augmentstions for *speech recognition* models.
 ***
 ### Augmentations:
 * Time Stretch
