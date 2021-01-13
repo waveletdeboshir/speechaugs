@@ -1,5 +1,5 @@
-from .speechaugs import BaseWaveformTransform, TimeStretch, PitchShift, WhiteNoise, PinkNoise, BrownNoise, ColoredNoise 
+from .speechaugs import BaseWaveformTransform, TimeStretchLibrosa, PitchShiftLibrosa, WhiteNoise, PinkNoise, BrownNoise, ColoredNoise, ForwardTimeShift, Inversion, ZeroSamples, ClippingSamples
 
-__version__ = '0.0.1'
+__version__ = '0.0.2'
 
-__all__ = ['BaseWaveformTransform', 'TimeStretch', 'PitchShift', 'WhiteNoise', 'PinkNoise', 'BrownNoise', 'ColoredNoise']
+__all__ = ['BaseWaveformTransform', 'TimeStretchLibrosa', 'PitchShiftLibrosa', 'WhiteNoise', 'PinkNoise', 'BrownNoise', 'ColoredNoise', 'ForwardTimeShift', 'Inversion', 'ZeroSamples', 'ClippingSamples']
