@@ -1,7 +1,7 @@
 # speechaugs
-Augmentations for single-channel waveforms.
+Augmentations for single-channel *waveforms* for *speech recognition* models.
 ***
-### Current augmentations:
+### Augmentations:
 * Time Stretch
 * Forward Time Shift
 * Pitch Shift
@@ -14,16 +14,17 @@ Augmentations for single-channel waveforms.
 `pip install speechaugs`
 ***
 ## Time Stretch
-Stretch a wavefom with randomly chosen rate. Is implemented using <a href="https://librosa.org/doc/main/generated/librosa.effects.time_stretch.html"> *librosa.effects.time_stretch*</a>. 
+Stretch a wavefom in time with randomly chosen rate. Is implemented using <a href="https://librosa.org/doc/main/generated/librosa.effects.time_stretch.html"> *librosa.effects.time_stretch*</a>. 
 <p>
 <img src="images/timestretch.png" width="700" height="300"/> 
 </p>
 
 ## Forward Time Shift
-
+Shift a waveform forwards in time.
 <p>
 <img src="images/forwardtimeshift.png" width="400" height="250"/> 
 </p>
+
 ## Pitch Shift
 Shift a pitch by *n_steps* semitones. Is implemented using <a href="https://librosa.org/doc/main/generated/librosa.effects.time_stretch.html"> *librosa.effects.time_stretch*</a>. 
 
@@ -55,17 +56,19 @@ This class is implemented using <a href="https://github.com/felixpatzelt/colored
 </p>
 
 ## Zero Samples
-
+Set some percentage of samples to zero.
 ## Clipping Samples
-
+Clip some percentage of samples from a waveform.
 <p>
 <img src="images/clipping.png" width="400" height="250"/> 
 </p>
-## Inversion
 
+## Inversion
+Change sign of waveform samples.
 <p>
 <img src="images/inversion.png" width="400" height="250"/> 
 </p>
+
 ***
 ## Usage example
 Import:
