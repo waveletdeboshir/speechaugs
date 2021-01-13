@@ -40,20 +40,18 @@ class TimeStretchLibrosa(BaseWaveformTransform):
     def apply(self, waveform, **params):
         waveform = waveform.clone()
         
-        rate = np.random.uniform(0.5, 2.0) # rate < 1.0 -- замедление, rate > 1.0 -- ускорение
+        rate = np.random.uniform(0.5, 2.0) # rate < 1.0 -- slow down, rate > 1.0 -- speed up
 
         if waveform.shape[1]/rate>self.max_duration*self.sr:
-            rate = np.random.uniform(1.0, 2.0) # Если длина получилась больше заданной максимальной -- ускоряем
+            rate = np.random.uniform(1.0, 2.0) # If length is greater than maximal then we speed up
 
         waveform = librosa.effects.time_stretch(waveform[0].numpy(), rate)
-        print('stretch')
-        # waveform = pyrb.time_stretch(waveform.transpose(0,1).numpy(), self.sr, rate) # должно работать качественнее, но не устанавливается
                 
         return torch.tensor(waveform, dtype=torch.float).unsqueeze(0)
 
 class PitchShiftLibrosa(BaseWaveformTransform):
     """ 
-        Shift the pitch up or down by n semitones.     
+        Shift a pitch up or down by n semitones.     
     """
     def __init__(self, always_apply=False, p=0.5, sr=16000):
         """
@@ -71,7 +69,6 @@ class PitchShiftLibrosa(BaseWaveformTransform):
 
         n_steps = np.random.randint(-10, 10) # n_steps < 0 -- shift down, n_steps > 0 -- shift up
         waveform = librosa.effects.pitch_shift(waveform[0].numpy(), self.sr, n_steps=n_steps, bins_per_octave=12)
-        print('pitch')
         
         return torch.tensor(waveform, dtype=torch.float).unsqueeze(0)
 
@@ -96,7 +93,6 @@ class ForwardTimeShift(BaseWaveformTransform):
 
       shift = np.random.randint(0, int(self.sr*self.max_duration - waveform.shape[-1]))
       waveform = torch.cat((torch.zeros(1, shift, dtype=torch.float), waveform), dim = 1)
-      print('shift')
       return waveform
 
 class Inversion(BaseWaveformTransform):
@@ -136,7 +132,6 @@ class ZeroSamples(BaseWaveformTransform):
         n_zero_samples = int(percent * waveform.shape[1])
         indexes = np.random.randint(0, waveform.shape[1], size=(n_zero_samples,))
         waveform.scatter_(1, torch.tensor(indexes).unsqueeze(0), torch.zeros((1,n_zero_samples), dtype=torch.float))
-        print('zero')
         return waveform
 
 class ClippingSamples(BaseWaveformTransform):
@@ -161,7 +156,6 @@ class ClippingSamples(BaseWaveformTransform):
         indexes = np.random.randint(0, waveform.shape[1], size=(n_clip_samples,))
         waveform.scatter_(1, torch.tensor(indexes).unsqueeze(0), 10000000*torch.ones((1,n_clip_samples), dtype=torch.float))
         waveform = waveform[waveform != 10000000.].unsqueeze(0)
-        print('clip')
         return waveform
 
 
@@ -193,17 +187,15 @@ class ColoredNoise(BaseWaveformTransform):
         waveform = waveform.clone()
         waveform.squeeze_(0)
 
-        noise_amp = np.random.uniform(self.min_amp, self.max_amp)*waveform.abs().max().numpy() # вычисление амплитуды шума
+        noise_amp = np.random.uniform(self.min_amp, self.max_amp)*waveform.abs().max().numpy() # calculate noise amplitude
         noise_color = np.random.randint(-2,3) # случайный тип шума
         if noise_color != 3:
-            col_noise = colorednoise.powerlaw_psd_gaussian(noise_color, len(waveform)) # генерация шума
+            col_noise = colorednoise.powerlaw_psd_gaussian(noise_color, len(waveform)) # noise generation
         else:
-            # генерация серого шума
+            # grey noise
             col_noise = colorednoise.powerlaw_psd_gaussian(2, len(waveform)) + colorednoise.powerlaw_psd_gaussian(-2, len(waveform))
-        # print(noise_color)
         
-        col_noise = col_noise*noise_amp/np.abs(col_noise).max() # приведение к нужной амплитуде
+        col_noise = col_noise*noise_amp/np.abs(col_noise).max() # get noise with desired amplitude
 
         waveform = waveform + torch.tensor(col_noise)
-        print('noise', noise_color)
         return waveform.unsqueeze(0).type(torch.float)
