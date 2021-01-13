@@ -23,15 +23,15 @@ class BaseWaveformTransform(BasicTransform):
 class TimeStretchLibrosa(BaseWaveformTransform):
     """ 
         Speed up or slow down a single-channel waveform.
+        
+        Parameters:
+        p: Default=0.5
+        max_duration: maximum audio length (in seconds), Default=10
+        sr: sample rate, Default=16000
     """
 
     def __init__(self, always_apply=False, p=0.5, sr=16000, max_duration=10):
-        """
-            Parameters:
-            p: Default=0.5
-            max_duration: maximum audio length (in seconds), Default=10
-            sr: sample rate, Default=16000
-        """
+
         super(TimeStretchLibrosa, self).__init__(always_apply, p)
 
         self.max_duration = max_duration
@@ -51,14 +51,15 @@ class TimeStretchLibrosa(BaseWaveformTransform):
 
 class PitchShiftLibrosa(BaseWaveformTransform):
     """ 
-        Shift a pitch up or down by n semitones.     
+        Shift a pitch up or down by n semitones. 
+        
+        
+        Parameters:
+        p: Default=0.5
+        sr: sample rate, Default=16000    
     """
     def __init__(self, always_apply=False, p=0.5, sr=16000):
-        """
-            Parameters:
-            p: Default=0.5
-            sr: sample rate, Default=16000
-        """
+
         super(PitchShiftLibrosa, self).__init__(always_apply, p)
 
         self.sr = sr
@@ -75,15 +76,14 @@ class PitchShiftLibrosa(BaseWaveformTransform):
 class ForwardTimeShift(BaseWaveformTransform):
     """
        Forward shift of samples up to specified duration.  
+       Parameters:
+       p: Default=0.5
+       max_duration: maximum audio length (in seconds), Default=10
+       sr: sample rate, Default=16000
     
     """
     def __init__(self, always_apply=False, p=0.5, max_duration=10, sr=16000):
-        """
-            Parameters:
-            p: Default=0.5
-            max_duration: maximum audio length (in seconds), Default=10
-            sr: sample rate, Default=16000
-        """
+
         super(ForwardTimeShift, self).__init__(always_apply, p)
         self.max_duration = max_duration
         self.sr = sr
@@ -98,12 +98,12 @@ class ForwardTimeShift(BaseWaveformTransform):
 class Inversion(BaseWaveformTransform):
     """
        Reverse signes of samples.
+       
+       Parameters:
+       p: Default=0.5
     """
     def __init__(self, always_apply=False, p=0.5):
-        """
-            Parameters:
-            p: Default=0.5
-        """
+
         super(Inversion, self).__init__(always_apply, p)
 
     def apply(self, waveform, **params):
@@ -114,14 +114,15 @@ class Inversion(BaseWaveformTransform):
 class ZeroSamples(BaseWaveformTransform):
     """
        Set to zero some samples in waveform.
+       
+       
+       Parameters:
+       p: Default=0.5
+       max_percent: maximal percentage of samples which will be set to zeros, Default=0.5
+       min_percent: minimal percentage of samples which will be set to zeros, Default=0.0
     """
     def __init__(self, always_apply=False, p=0.5, min_percent=0.0, max_percent=0.5):
-        """
-            Parameters:
-            p: Default=0.5
-            max_percent: maximal percentage of samples which will be set to zeros, Default=0.5
-            min_percent: minimal percentage of samples which will be set to zeros, Default=0.0
-        """
+
         super(ZeroSamples, self).__init__(always_apply, p)
         self.min_percent = min_percent
         self.max_percent = max_percent
@@ -137,14 +138,14 @@ class ZeroSamples(BaseWaveformTransform):
 class ClippingSamples(BaseWaveformTransform):
     """
        Clip some samples from waveform.
+       
+       Parameters:
+       p: Default=0.5
+       max_percent: maximal percentage of samples which will be clipped, Default=0.25
+       min_percent: minimal percentage of samples which will be clipped, Default=0.0
     """
     def __init__(self, always_apply=False, p=0.5, min_percent=0.0, max_percent=0.25):
-        """
-            Parameters:
-            p: Default=0.5
-            max_percent: maximal percentage of samples which will be clipped, Default=0.25
-            min_percent: minimal percentage of samples which will be clipped, Default=0.0
-        """
+
         super(ClippingSamples, self).__init__(always_apply, p)
         self.min_percent = min_percent
         self.max_percent = max_percent
@@ -169,15 +170,16 @@ class ColoredNoise(BaseWaveformTransform):
                                                        -2 -- violet noise (~f^2)
 
                                                        3 -- grey noise (brown + violet noise)
+                            
+                            
+       Parameters:
+       p: Default=0.5
+       max_amp: maximal percentage of noise amplitude in relation to waveform amplitude, Default=0.1
+       min_amp: minimal percentage of noise amplitude in relation to waveform amplitude, Default=0.0
     """
 
     def __init__(self, always_apply=False, p=0.5, max_amp=0.1, min_amp=0.0):
-        """
-            Parameters:
-            p: Default=0.5
-            max_amp: maximal percentage of noise amplitude in relation to waveform amplitude, Default=0.1
-            min_amp: minimal percentage of noise amplitude in relation to waveform amplitude, Default=0.0
-        """
+
         super(ColoredNoise, self).__init__(always_apply, p)
         self.min_amp = min_amp
         self.max_amp = max_amp
