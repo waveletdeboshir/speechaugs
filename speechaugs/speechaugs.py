@@ -101,9 +101,9 @@ class ForwardTimeShift(BaseWaveformTransform):
     def apply(self, waveform, **params):
       assert waveform.shape[1] <= self.max_duration*self.sr, 'waveform length > max_duration*sr'
       waveform = waveform.clone()
-      dif = int(self.sr*self.max_duration - waveform.shape[-1])
+      dif = int(self.sr*self.max_duration - waveform.shape[1])
       if dif > 0:
-          shift = np.random.randint(dif)
+          shift = np.random.randint(0, dif)
           waveform = torch.cat((torch.zeros(1, shift, dtype=torch.float), waveform), dim = 1)
           return waveform
       else:
@@ -206,7 +206,7 @@ class ColoredNoise(BaseWaveformTransform):
         waveform.squeeze_(0)
 
         noise_amp = np.random.uniform(self.min_amp, self.max_amp)*waveform.abs().max().numpy() # calculate noise amplitude
-        noise_color = np.random.randint(-2,3) # случайный тип шума
+        noise_color = np.random.randint(-2,3) # noise type
         if noise_color != 3:
             col_noise = colorednoise.powerlaw_psd_gaussian(noise_color, len(waveform)) # noise generation
         else:
