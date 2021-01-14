@@ -1,5 +1,5 @@
 # speechaugs
-Single-channel *waveforms* augmentstions for *speech recognition* models.
+Single-channel *waveforms* augmentations for *speech recognition* models.
 ***
 ### Augmentations:
 * Time Stretch
@@ -41,6 +41,7 @@ The work of PitchShift can be better illustrated on the MelSpectrograms of wavef
 </p>
 
 ## Colored Noise
+Add noise of different color to a waveform.
 Color of noise depends on the spectral density of the noise. You can go to <a href="https://en.wikipedia.org/wiki/Colors_of_noise">wiki page</a> for more information.
 
 This class is implemented using <a href="https://github.com/felixpatzelt/colorednoise">colorednoise package</a>. The color of noise is randomly choosen.
