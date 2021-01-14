@@ -19,7 +19,6 @@ class BaseWaveformTransform(BasicTransform):
         return params
 
 
-
 class TimeStretchLibrosa(BaseWaveformTransform):
     """ 
         Speed up or slow down a single-channel waveform.
@@ -28,22 +27,28 @@ class TimeStretchLibrosa(BaseWaveformTransform):
         p: Default=0.5
         max_duration: maximum audio length (in seconds), Default=10
         sr: sample rate, Default=16000
+        min_rate: minimal stretch rate, Default=0.5
+        max_rate: maximal stretch rate, Default=2.
     """
 
-    def __init__(self, always_apply=False, p=0.5, sr=16000, max_duration=10):
+    def __init__(self, always_apply=False, p=0.5, sr=16000, max_duration=10., min_rate=0.5, max_rate=2.):
 
         super(TimeStretchLibrosa, self).__init__(always_apply, p)
+        assert min_rate < max_rate, 'min_rate >= max_rate'
 
         self.max_duration = max_duration
         self.sr = sr
+        self.min_rate = min_rate
+        self.max_rate = max_rate
 
     def apply(self, waveform, **params):
+        assert waveform.shape[1] <= self.max_duration*self.sr, 'waveform length > max_duration*sr'
         waveform = waveform.clone()
         
-        rate = np.random.uniform(0.5, 2.0) # rate < 1.0 -- slow down, rate > 1.0 -- speed up
+        rate = np.random.uniform(self.min_rate, self.max_rate) # rate < 1.0 -- slow down, rate > 1.0 -- speed up
 
         if waveform.shape[1]/rate>self.max_duration*self.sr:
-            rate = np.random.uniform(1.0, 2.0) # If length is greater than maximal then we speed up
+            rate = np.random.uniform(1., 2.) # If length is greater than max_duration then we increase speed up to 2 times
 
         waveform = librosa.effects.time_stretch(waveform[0].numpy(), rate)
                 
@@ -57,18 +62,23 @@ class PitchShiftLibrosa(BaseWaveformTransform):
         Parameters:
         p: Default=0.5
         sr: sample rate, Default=16000    
+        min_steps: minimal shift steps (semitones), Default = -10
+        max_steps: maximal shift steps (semitones), Default = 10
     """
-    def __init__(self, always_apply=False, p=0.5, sr=16000):
+    def __init__(self, always_apply=False, p=0.5, sr=16000, min_steps=-10, max_steps=10):
 
         super(PitchShiftLibrosa, self).__init__(always_apply, p)
+        assert min_steps < max_steps, 'min_steps >= max_steps'
 
         self.sr = sr
+        self.min_steps = min_steps
+        self.max_steps = max_steps
 
 
     def apply(self, waveform, **params):
         waveform = waveform.clone()
 
-        n_steps = np.random.randint(-10, 10) # n_steps < 0 -- shift down, n_steps > 0 -- shift up
+        n_steps = np.random.randint(self.min_steps, self.max_steps) # n_steps < 0 -- shift down, n_steps > 0 -- shift up
         waveform = librosa.effects.pitch_shift(waveform[0].numpy(), self.sr, n_steps=n_steps, bins_per_octave=12)
         
         return torch.tensor(waveform, dtype=torch.float).unsqueeze(0)
@@ -89,11 +99,15 @@ class ForwardTimeShift(BaseWaveformTransform):
         self.sr = sr
 
     def apply(self, waveform, **params):
+      assert waveform.shape[1] <= self.max_duration*self.sr, 'waveform length > max_duration*sr'
       waveform = waveform.clone()
-
-      shift = np.random.randint(0, int(self.sr*self.max_duration - waveform.shape[-1]))
-      waveform = torch.cat((torch.zeros(1, shift, dtype=torch.float), waveform), dim = 1)
-      return waveform
+      dif = int(self.sr*self.max_duration - waveform.shape[-1])
+      if dif > 0:
+          shift = np.random.randint(dif)
+          waveform = torch.cat((torch.zeros(1, shift, dtype=torch.float), waveform), dim = 1)
+          return waveform
+      else:
+          return waveform # if waveform length == max_duration*sr then we don't shift
 
 class Inversion(BaseWaveformTransform):
     """
@@ -123,6 +137,7 @@ class ZeroSamples(BaseWaveformTransform):
     def __init__(self, always_apply=False, p=0.5, min_percent=0.0, max_percent=0.5):
 
         super(ZeroSamples, self).__init__(always_apply, p)
+        assert min_percent < max_percent, 'min_percent >= max_percent'
         self.min_percent = min_percent
         self.max_percent = max_percent
 
@@ -146,6 +161,7 @@ class ClippingSamples(BaseWaveformTransform):
     def __init__(self, always_apply=False, p=0.5, min_percent=0.0, max_percent=0.25):
 
         super(ClippingSamples, self).__init__(always_apply, p)
+        assert min_percent < max_percent, 'min_percent >= max_percent'
         self.min_percent = min_percent
         self.max_percent = max_percent
 
@@ -180,6 +196,7 @@ class ColoredNoise(BaseWaveformTransform):
     def __init__(self, always_apply=False, p=0.5, max_amp=0.1, min_amp=0.0):
 
         super(ColoredNoise, self).__init__(always_apply, p)
+        assert min_amp < max_amp, 'min_amp >= max_amp'
         self.min_amp = min_amp
         self.max_amp = max_amp
 
