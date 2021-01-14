@@ -16,7 +16,7 @@ Single-channel *waveforms* augmentstions for *speech recognition* models.
 ## Time Stretch
 Stretch a wavefom in time with randomly chosen rate. Is implemented using <a href="https://librosa.org/doc/main/generated/librosa.effects.time_stretch.html"> *librosa.effects.time_stretch*</a>. 
 <p>
-<img src="https://raw.githubusercontent.com/waveletdeboshir/speechaugs/master/timestretch.png" width="700"/> 
+<img src="https://raw.githubusercontent.com/waveletdeboshir/speechaugs/master/images/timestretch.png" width="700"/> 
 </p>
 
 ## Forward Time Shift
