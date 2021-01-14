@@ -70,11 +70,13 @@ Change sign of waveform samples.
 </p>
 
 ***
-## Usage example
+## Usage example (with default parameters)
 Import:
 ```python
 from speechaugs import TimeStretchLibrosa, ForwardTimeShift, PitchShiftLibrosa, ColoredNoise, Inversion, ZeroSamples, ClippingSamples
-    
+```    
+Other libs:
+```python
 import torch, torchaudio
 import albumentations as A
 ```
