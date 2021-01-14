@@ -9,6 +9,9 @@ Single-channel *waveforms* augmentations for *speech recognition* models.
 * Zero Samples
 * Clipping samples
 * Inversion
+---
+<a href="https://github.com/waveletdeboshir/speechaugs/blob/master/examples/Augmentations_Example.ipynb"> Colab Example</a>
+
 ***
 ## Installation
 `pip install speechaugs`
