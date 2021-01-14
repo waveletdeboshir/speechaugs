@@ -108,7 +108,6 @@ class Inversion(BaseWaveformTransform):
 
     def apply(self, waveform, **params):
         waveform = waveform.clone()
-        print('inverse')
         return -waveform         
 
 class ZeroSamples(BaseWaveformTransform):
