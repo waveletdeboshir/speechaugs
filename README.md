@@ -37,7 +37,7 @@ The work of PitchShift can be better illustrated on the MelSpectrograms of wavef
 
 **Lower pitch (-5 semitones)**
 <p>
-<img src="https://raw.githubusercontent.com/waveletdeboshir/speechaugs/master/images/loweroitch.png" width="600"  title="Lower pitch (-5 semitones)"/> 
+<img src="https://raw.githubusercontent.com/waveletdeboshir/speechaugs/master/images/lowerpitch.png" width="600"  title="Lower pitch (-5 semitones)"/> 
 </p>
 
 ## Colored Noise
