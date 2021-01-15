@@ -43,6 +43,8 @@ class TimeStretchLibrosa(BaseWaveformTransform):
 
     def apply(self, waveform, **params):
         assert waveform.shape[1] <= self.max_duration*self.sr, 'waveform length > max_duration*sr'
+        assert waveform.shape[0] == 1, 'waveform should have 1-channel'
+        assert waveform.shape[1] > 0, 'waveform is empty'
         waveform = waveform.clone()
         
         rate = np.random.uniform(self.min_rate, self.max_rate) # rate < 1.0 -- slow down, rate > 1.0 -- speed up
@@ -76,6 +78,8 @@ class PitchShiftLibrosa(BaseWaveformTransform):
 
 
     def apply(self, waveform, **params):
+        assert waveform.shape[0] == 1, 'waveform should have 1-channel'
+        assert waveform.shape[1] > 0, 'waveform is empty'
         waveform = waveform.clone()
 
         n_steps = np.random.randint(self.min_steps, self.max_steps) # n_steps < 0 -- shift down, n_steps > 0 -- shift up
@@ -100,11 +104,12 @@ class ForwardTimeShift(BaseWaveformTransform):
 
     def apply(self, waveform, **params):
       assert waveform.shape[1] <= self.max_duration*self.sr, 'waveform length > max_duration*sr'
+      assert waveform.shape[1] > 0, 'waveform is empty'
       waveform = waveform.clone()
       dif = int(self.sr*self.max_duration - waveform.shape[1])
       if dif > 0:
           shift = np.random.randint(0, dif)
-          waveform = torch.cat((torch.zeros(1, shift, dtype=torch.float), waveform), dim = 1)
+          waveform = torch.cat((torch.zeros(waveform.shape[0], shift, dtype=torch.float), waveform), dim = 1)
           return waveform
       else:
           return waveform # if waveform length == max_duration*sr then we don't shift
@@ -142,6 +147,8 @@ class ZeroSamples(BaseWaveformTransform):
         self.max_percent = max_percent
 
     def apply(self, waveform, **params):
+        assert waveform.shape[0] == 1, 'waveform should have 1-channel'
+        assert waveform.shape[1] > 0, 'waveform is empty'
         waveform = waveform.clone()
         percent = np.random.uniform(self.min_percent, self.max_percent)
         n_zero_samples = int(percent * waveform.shape[1])
@@ -166,6 +173,8 @@ class ClippingSamples(BaseWaveformTransform):
         self.max_percent = max_percent
 
     def apply(self, waveform, **params):
+        assert waveform.shape[0] == 1, 'waveform should have 1-channel'
+        assert waveform.shape[1] > 0, 'waveform is empty'
         waveform = waveform.clone()
         percent = np.random.uniform(self.min_percent, self.max_percent)
         n_clip_samples = int(percent * waveform.shape[1])
@@ -202,6 +211,8 @@ class ColoredNoise(BaseWaveformTransform):
 
 
     def apply(self, waveform, **params):
+        assert waveform.shape[0] == 1, 'waveform should have 1-channel'
+        assert waveform.shape[1] > 0, 'waveform is empty'
         waveform = waveform.clone()
         waveform.squeeze_(0)
 
