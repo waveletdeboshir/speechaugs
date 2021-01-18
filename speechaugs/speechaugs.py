@@ -49,9 +49,8 @@ class TimeStretchLibrosa(BaseWaveformTransform):
         
         rate = np.random.uniform(self.min_rate, self.max_rate) # rate < 1.0 -- slow down, rate > 1.0 -- speed up
 
-        if waveform.shape[1]/rate>=self.max_duration*self.sr-256:
+        if waveform.shape[1]/rate>=self.max_duration*self.sr-1000:
             rate = np.random.uniform(1., 2.) # If length is greater than max_duration then we increase speed up to 2 times
-            # (librosa time stretch adds 256 samples when you try to speed up signal)
         waveform = librosa.effects.time_stretch(waveform[0].numpy(), rate)
                 
         return torch.tensor(waveform, dtype=torch.float).unsqueeze(0)
