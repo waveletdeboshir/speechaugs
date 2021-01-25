@@ -287,7 +287,7 @@ class LoudnessChange(BaseWaveformTransform):
         assert waveform.shape[1] > 0, 'waveform is empty'
         waveform = waveform.clone()
         n_intervals = np.random.randint(1, self.max_n_intervals+1)
-        print(n_intervals)
+        
         len_interval = len(waveform[0])//n_intervals
         for i in range(n_intervals):
 
@@ -295,7 +295,6 @@ class LoudnessChange(BaseWaveformTransform):
                 factor = np.random.uniform(self.min_factor, 1.)
             else:
                 factor = np.random.uniform(1., self.max_factor)
-            print(factor)
             waveform[:, i*len_interval:(i+1)*len_interval] = factor*waveform[:, i*len_interval:(i+1)*len_interval]
 
         return waveform
@@ -337,7 +336,6 @@ class ShortNoises(BaseWaveformTransform):
         noise_amp = np.random.uniform(self.min_amp, self.max_amp)*waveform.abs().max().numpy() # calculate noise amplitude
         noise_color = np.random.randint(-2,3) # noise type
         n_noises = np.random.randint(1, self.max_n_noises+1)
-        print(n_noises, noise_color)
         for i in range(n_noises):
             noise_length = int(np.random.uniform(0., 1/(self.max_n_noises*2.))*len(waveform)) 
             start_sample = np.random.randint(i*(len(waveform)//n_noises), (i+1)*(len(waveform)//n_noises) - noise_length)
