@@ -9,6 +9,9 @@ Single-channel *waveforms* augmentations for *speech recognition* models.
 * Zero Samples
 * Clipping samples
 * Inversion
+* Loudness Change
+* Short Noises
+* File Noise
 ---
 <a href="https://github.com/waveletdeboshir/speechaugs/blob/master/examples/Augmentations_Example.ipynb"> **Colab Example**</a>
 You can see examples of all augmentations and listen to resulting audios on <a href="https://github.com/waveletdeboshir/speechaugs/blob/master/examples/Augmentations_Example.ipynb"> this page</a> with Colab notebook.
@@ -71,6 +74,24 @@ Clip some percentage of samples from a waveform.
 Change sign of waveform samples.
 <p>
 <img src="https://raw.githubusercontent.com/waveletdeboshir/speechaugs/master/images/inversion.png" width="400" title="Inversion"/> 
+</p>
+
+## Loudness Change
+Change loudness of intervals of a waveform. For example, in the figure below initial waveform was splitted into 3 intervals and samples from each of them were multiplied by different random factors.
+<p>
+<img src="https://raw.githubusercontent.com/waveletdeboshir/speechaugs/master/images/loudnesschange.png" width="400" title="Loudness"/> 
+</p>
+
+## Short Noises
+Add several short noises to different parts of a waveform.
+<p>
+<img src="https://raw.githubusercontent.com/waveletdeboshir/speechaugs/master/images/shortnoises.png" width="400" title="ShortNoises"/> 
+</p>
+
+## File Noise
+Add noise from randomly chosen file from specified folder. 
+<p>
+<img src="https://raw.githubusercontent.com/waveletdeboshir/speechaugs/master/images/filenoise.png" width="400" title="FileNoise"/> 
 </p>
 
 ***
