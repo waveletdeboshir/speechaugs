@@ -245,7 +245,7 @@ class ColoredNoise(BaseWaveformTransform):
         waveform.squeeze_(0)
 
         noise_amp = np.random.uniform(self.min_amp, self.max_amp)*waveform.abs().max().numpy() # calculate noise amplitude
-        noise_color = np.random.randint(-2,3) # noise type
+        noise_color = np.random.randint(-2, 4) # noise type
         if noise_color != 3:
             col_noise = colorednoise.powerlaw_psd_gaussian(noise_color, len(waveform)) # noise generation
         else:
@@ -334,7 +334,7 @@ class ShortNoises(BaseWaveformTransform):
         waveform = waveform.clone()
         waveform.squeeze_(0)
         noise_amp = np.random.uniform(self.min_amp, self.max_amp)*waveform.abs().max().numpy() # calculate noise amplitude
-        noise_color = np.random.randint(-2,3) # noise type
+        noise_color = np.random.randint(-2, 4) # noise type
         n_noises = np.random.randint(1, self.max_n_noises+1)
         for i in range(n_noises):
             noise_length = int(np.random.uniform(0., 1/(self.max_n_noises*2.))*len(waveform)) 
