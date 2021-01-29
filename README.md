@@ -83,13 +83,16 @@ Change loudness of intervals of a waveform. For example, in the figure below ini
 </p>
 
 ## Short Noises
-Add several short noises to different parts of a waveform.
+Add several short noises (of same color) to different parts of a waveform.
 <p>
 <img src="https://raw.githubusercontent.com/waveletdeboshir/speechaugs/master/images/shortnoises.png" width="400" title="ShortNoises"/> 
 </p>
 
 ## File Noise
-Add noise from randomly chosen file from specified folder. 
+Add noise from randomly chosen file from specified folder. Works with "sox_io" torchaudio backend. To change backend you can run:
+```python
+torchaudio.set_audio_backend('sox_io')
+```    
 <p>
 <img src="https://raw.githubusercontent.com/waveletdeboshir/speechaugs/master/images/filenoise.png" width="400" title="FileNoise"/> 
 </p>
@@ -98,7 +101,7 @@ Add noise from randomly chosen file from specified folder.
 ## Usage example (with default parameters)
 Import:
 ```python
-from speechaugs import TimeStretchLibrosa, ForwardTimeShift, PitchShiftLibrosa, ColoredNoise, Inversion, ZeroSamples, ClippingSamples
+import speechaugs
 ```    
 Other libs:
 ```python
@@ -109,13 +112,14 @@ Usage:
 ```python
 
 ex_waveform, sr = torchaudio.load('audio_filename')
+noiseroot='path_to_noise_folder'
 
 transforms = A.Compose([
-    ForwardTimeShift(p=0.5),
-    Inversion(p=0.5),
-    A.OneOf([ZeroSamples(p=0.5), ClippingSamples(p=0.5)], p=0.5),
-    A.OneOf([TimeStretchLibrosa(p=0.5), PitchShiftLibrosa(p=0.5)], p = 0.5),
-    ColoredNoise(p=0.5)
+    speechaugs.ForwardTimeShift(p=0.5),
+    A.OneOf([speechaugs.Inversion(p=0.5), speechaugs.LoudnessChange(p=0.5)], p=0.5),
+    A.OneOf([speechaugs.ZeroSamples(p=0.5), speechaugs.ClippingSamples(p=0.5)], p=0.5),
+    A.OneOf([speechaugs.TimeStretchLibrosa(p=0.5), speechaugs.PitchShiftLibrosa(p=0.5)], p=0.5),
+    A.OneOf([speechaugs.ColoredNoise(p=0.3), speechaugs.ShortNoises(p=0.3), speechaugs.FileNoise(noiseroot, p=0.3)], p=0.5),
 ], p=1.0)
 
 augmented = transforms(waveform=ex_waveform)['waveform']
