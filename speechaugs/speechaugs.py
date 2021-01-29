@@ -1,6 +1,6 @@
 import torch, torchaudio
-import librosa
-import colorednoise
+from librosa.effects import time_stretch, pitch_shift
+from colorednoise import powerlaw_psd_gaussian
 import numpy as np
 import glob
 
@@ -56,7 +56,7 @@ class TimeStretchLibrosa(BaseWaveformTransform):
 
         if waveform.shape[1]/rate>=self.max_duration*self.sr-1000:
             rate = np.random.uniform(1., 2.) # If length is greater than max_duration then we increase speed up to 2 times
-        waveform = librosa.effects.time_stretch(waveform[0].numpy(), rate)
+        waveform = time_stretch(waveform[0].numpy(), rate)
                 
         return torch.tensor(waveform, dtype=torch.float).unsqueeze(0)
 
@@ -91,7 +91,7 @@ class PitchShiftLibrosa(BaseWaveformTransform):
         waveform = waveform.clone()
 
         n_steps = np.random.randint(self.min_steps, self.max_steps) # n_steps < 0 -- shift down, n_steps > 0 -- shift up
-        waveform = librosa.effects.pitch_shift(waveform[0].numpy(), self.sr, n_steps=n_steps, bins_per_octave=12)
+        waveform = pitch_shift(waveform[0].numpy(), self.sr, n_steps=n_steps, bins_per_octave=12)
         
         return torch.tensor(waveform, dtype=torch.float).unsqueeze(0)
 
@@ -247,10 +247,10 @@ class ColoredNoise(BaseWaveformTransform):
         noise_amp = np.random.uniform(self.min_amp, self.max_amp)*waveform.abs().max().numpy() # calculate noise amplitude
         noise_color = np.random.randint(-2, 4) # noise type
         if noise_color != 3:
-            col_noise = colorednoise.powerlaw_psd_gaussian(noise_color, len(waveform)) # noise generation
+            col_noise = powerlaw_psd_gaussian(noise_color, len(waveform)) # noise generation
         else:
             # grey noise
-            col_noise = colorednoise.powerlaw_psd_gaussian(2, len(waveform)) + colorednoise.powerlaw_psd_gaussian(-2, len(waveform))
+            col_noise = powerlaw_psd_gaussian(2, len(waveform)) + powerlaw_psd_gaussian(-2, len(waveform))
         
         col_noise = col_noise*noise_amp/np.abs(col_noise).max() # get noise with desired amplitude
 
@@ -292,9 +292,9 @@ class LoudnessChange(BaseWaveformTransform):
         for i in range(n_intervals):
 
             if np.random.binomial(1, 0.5):
-                factor = np.random.uniform(self.min_factor, 1.)
+                factor = np.random.uniform(self.min_factor, 1.) # reduce loudness
             else:
-                factor = np.random.uniform(1., self.max_factor)
+                factor = np.random.uniform(1., self.max_factor) # increase loudness
             waveform[:, i*len_interval:(i+1)*len_interval] = factor*waveform[:, i*len_interval:(i+1)*len_interval]
 
         return waveform
@@ -323,7 +323,7 @@ class ShortNoises(BaseWaveformTransform):
     def __init__(self, always_apply=False, p=0.5, min_amp=0.3, max_amp=0.5, max_n_noises=5):
         super(ShortNoises, self).__init__(always_apply, p)
         assert min_amp < max_amp, 'min_amp >= max_amp'
-        assert max_n_noises > 0, 'max_n_intervals <= 0'
+        assert 0 < max_n_noises < 50, 'max_n_intervals <= 0 or >= 50'
         self.min_amp = min_amp
         self.max_amp = max_amp
         self.max_n_noises = max_n_noises
@@ -337,13 +337,13 @@ class ShortNoises(BaseWaveformTransform):
         noise_color = np.random.randint(-2, 4) # noise type
         n_noises = np.random.randint(1, self.max_n_noises+1)
         for i in range(n_noises):
-            noise_length = int(np.random.uniform(0., 1/(self.max_n_noises*2.))*len(waveform)) 
+            noise_length = int(np.random.uniform(0.01, 1/(self.max_n_noises*2.))*len(waveform)) 
             start_sample = np.random.randint(i*(len(waveform)//n_noises), (i+1)*(len(waveform)//n_noises) - noise_length)
             if noise_color != 3:
-                col_noise = colorednoise.powerlaw_psd_gaussian(noise_color, noise_length) # noise generation
+                col_noise = powerlaw_psd_gaussian(noise_color, noise_length) # noise generation
             else:
                 # grey noise
-                col_noise = colorednoise.powerlaw_psd_gaussian(2, noise_length) + colorednoise.powerlaw_psd_gaussian(-2, noise_length)
+                col_noise = powerlaw_psd_gaussian(2, noise_length) + powerlaw_psd_gaussian(-2, noise_length)
             
             col_noise = col_noise*noise_amp/np.abs(col_noise).max() # get noise with desired amplitude
             waveform[start_sample:start_sample+noise_length] = waveform[start_sample:start_sample+noise_length]+col_noise
