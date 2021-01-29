@@ -112,7 +112,7 @@ Usage:
 ```python
 
 ex_waveform, sr = torchaudio.load('audio_filename')
-noiseroot='path_to_noise_folder'
+noiseroot = 'path_to_noise_folder'
 
 transforms = A.Compose([
     speechaugs.ForwardTimeShift(p=0.5),
