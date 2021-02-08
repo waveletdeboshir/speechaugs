@@ -2,16 +2,22 @@
 Single-channel *waveforms* augmentations for *speech recognition* models.
 ***
 ### Augmentations:
+#### Tranforms in time domain:
 * Time Stretch
 * Forward Time Shift
+#### frequency domain:
 * Pitch Shift
+* Vocal Tract Length Perturbation
+#### Noise injection:
 * Colored Noise (white, pink, brown, blue, violet, grey)
+* Short Noises
+* File Noise
+#### And changing the waveform samples directly:
 * Zero Samples
 * Clipping samples
 * Inversion
 * Loudness Change
-* Short Noises
-* File Noise
+* Normalization
 ---
 <a href="https://github.com/waveletdeboshir/speechaugs/blob/master/examples/Augmentations_Example.ipynb"> **Colab Example**</a>
 You can see examples of all augmentations and listen to resulting audios on <a href="https://github.com/waveletdeboshir/speechaugs/blob/master/examples/Augmentations_Example.ipynb"> this page</a> with Colab notebook.
@@ -46,6 +52,9 @@ The work of PitchShift can be better illustrated on the MelSpectrograms of wavef
 <img src="https://raw.githubusercontent.com/waveletdeboshir/speechaugs/master/images/lowerpitch.png" width="600"  title="Lower pitch (-5 semitones)"/> 
 </p>
 
+## Vocal Tract Length Perturbation
+Change vocal tract length. Effect is very similar to Pitch Shift but speech sounds more natural.
+
 ## Colored Noise
 Add noise of different color to a waveform.
 Color of noise depends on the spectral density of the noise. You can go to <a href="https://en.wikipedia.org/wiki/Colors_of_noise">wiki page</a> for more information.
@@ -62,8 +71,24 @@ This class is implemented using <a href="https://github.com/felixpatzelt/colored
 <img src="https://raw.githubusercontent.com/waveletdeboshir/speechaugs/master/images/brownnoise.png" width="600" title="Brown Noise"/> 
 </p>
 
+## Short Noises
+Add several short noises (of same color) to different parts of a waveform.
+<p>
+<img src="https://raw.githubusercontent.com/waveletdeboshir/speechaugs/master/images/shortnoises.png" width="400" title="ShortNoises"/> 
+</p>
+
+## File Noise
+Add noise from randomly chosen file from specified folder. Works with "sox_io" torchaudio backend. To change backend you can run:
+```python
+torchaudio.set_audio_backend('sox_io')
+```    
+<p>
+<img src="https://raw.githubusercontent.com/waveletdeboshir/speechaugs/master/images/filenoise.png" width="400" title="FileNoise"/> 
+</p>
+
 ## Zero Samples
 Set some percentage of samples to zero.
+
 ## Clipping Samples
 Clip some percentage of samples from a waveform.
 <p>
@@ -82,20 +107,8 @@ Change loudness of intervals of a waveform. For example, in the figure below ini
 <img src="https://raw.githubusercontent.com/waveletdeboshir/speechaugs/master/images/loudnesschange.png" width="400" title="Loudness"/> 
 </p>
 
-## Short Noises
-Add several short noises (of same color) to different parts of a waveform.
-<p>
-<img src="https://raw.githubusercontent.com/waveletdeboshir/speechaugs/master/images/shortnoises.png" width="400" title="ShortNoises"/> 
-</p>
-
-## File Noise
-Add noise from randomly chosen file from specified folder. Works with "sox_io" torchaudio backend. To change backend you can run:
-```python
-torchaudio.set_audio_backend('sox_io')
-```    
-<p>
-<img src="https://raw.githubusercontent.com/waveletdeboshir/speechaugs/master/images/filenoise.png" width="400" title="FileNoise"/> 
-</p>
+## Normalization
+Normalize a waveform with choosen method ("minmax", "max" or "meanstd")
 
 ***
 ## Usage example (with default parameters)

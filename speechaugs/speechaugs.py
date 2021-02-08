@@ -409,3 +409,113 @@ class FileNoise(BaseWaveformTransform):
             waveform[:, n_rep*noise_len:] = waveform[:, n_rep*noise_len:] + noise_wave[:, :wave_len - n_rep*noise_len]
 
         return waveform
+
+
+class Normalization(BaseWaveformTransform):
+    """
+        Normalize a single-channel waveform.
+
+        Parameters: 
+        p: float, Default = 0.5
+        mode: str, normalization method. Supports: "minmax" -- data is
+        substracted by min absolute value and divided by max absolute value;
+        "max" -- data is divided by max absolute value;
+        "meanstd" -- data is substracted by mean and divided by standard deviation
+        
+         -------------
+        input: waveform, torch.tensor of shape [1, n]   
+        output: augmented waveform,torch.tensor of shape [1, n]
+    """
+    def __init__(self, always_apply=False, p=0.5, mode="minmax"):
+        super(Normalization, self).__init__(always_apply, p)
+        self.mode = mode
+
+    def _minmax(self, y):
+        y = y - y.abs().min(dim=-1, keepdims=True).values
+        y = y / y.abs().max(dim=-1, keepdims=True).values
+        return y
+
+    def _max(self, y):
+        return y / y.abs().max(dim=-1, keepdims=True).values
+
+    def _meanstd(self, y):
+        return (y - y.float().mean(dim=-1, keepdims=True)) / y.float().std(dim=-1, keepdims=True)
+
+    def apply(self, waveform, **params):
+        assert waveform.shape[0] == 1, 'waveform should have 1 channel'
+        assert waveform.shape[1] > 0, 'waveform is empty'
+        waveform = waveform.clone()
+        if self.mode == "minmax":
+            return self._minmax(waveform)
+        elif self.mode == "max":
+            return self._max(waveform)
+        elif self.mode == "meanstd": 
+            return self._meanstd(waveform)
+        else:
+            raise ValueError("There is no such mode. Try \"minmax\", \"max\" or \"meanstd\"")
+
+
+class VTLP(BaseWaveformTransform):
+    """
+       http://www.cs.toronto.edu/~hinton/absps/perturb.pdf
+
+       Apply vocal tract length perturbation to single-channel waveform
+
+
+       Parameters:
+       p: float, Default = 0.5
+       sr: int, sample rate, Default: 16000
+       warp_factor: tuple, range of warp factor, Default: (0.9, 1.1)
+       boundary_freq: float, a boundary frequency chosen such that it covers the significant formants, Default: 4800
+   
+       -------------
+       input: waveform, torch.tensor of shape [1, n]   
+       output: augmented waveform,torch.tensor of shape [1, n]
+    """
+    def __init__(self, always_apply=False, p=0.5, sr=16000, warp_factor=(0.9, 1.1), boundary_freq=4800):
+        assert warp_factor[0] < warp_factor[1], "min warp_factor >= max warp_factor"
+        assert boundary_freq <= sr//2, "boundary frequency > max frequency"
+        super(VTLP, self).__init__(always_apply, p)
+        self.sr = sr
+        self.warp_factor = warp_factor
+        self.fhi = boundary_freq
+
+    def get_new_freqs(self, n_freqs, n_fft):
+        new_freqs = []
+        alpha = np.random.uniform(self.warp_factor[0], self.warp_factor[1])
+        bound_f = (self.fhi * min(alpha, 1)) / alpha
+        half_sampling_f = self.sr / 2
+        freqs = torch.arange(0, 1 + n_fft / 2) * self.sr / n_fft
+        for fr in freqs:
+            if fr < bound_f:
+                new_freqs.append(fr * alpha)
+            else:
+                new_freqs.append(half_sampling_f - (half_sampling_f - self.fhi * min(alpha, 1))/ (half_sampling_f - bound_f) * (half_sampling_f - fr))
+        return torch.tensor(new_freqs)
+
+
+    def apply(self, waveform, **params):
+        assert waveform.shape[0] == 1, 'waveform should have 1-channel'
+        assert waveform.shape[1] > 0, 'waveform is empty'
+        waveform = waveform.clone()
+        n_fft = 512
+        spec = torch.stft(waveform.squeeze(0), n_fft=n_fft, return_complex=True)
+        # spec = torch.tensor(librosa.core.stft(waveform[0].numpy(), n_fft=n_fft))
+        datatype = spec[0, 0].dtype
+        n_freqs, n_time = spec.shape
+        new_freqs = self.get_new_freqs(n_freqs, n_fft)
+        new_spec = torch.zeros(n_freqs, n_time, dtype=datatype)
+
+        for i in range(n_freqs):
+            if (i != 0) & (i+1 < n_freqs):
+                warp_up = new_freqs[i] - torch.floor(new_freqs[i])
+                warp_down = 1 - warp_up
+                pos = int(torch.floor(new_freqs[i]) * n_fft / self.sr)
+                new_spec[pos, :] += warp_down * spec[i, :]
+                new_spec[pos+1, :] += warp_up * spec[i, :]
+
+            else:
+                new_spec[i, :] += spec[i, :]
+        augmented = torch.istft(new_spec, n_fft)
+        # augmented = librosa.core.istft(new_spec.numpy())
+        return augmented.unsqueeze(0)
