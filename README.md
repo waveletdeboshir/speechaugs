@@ -20,7 +20,7 @@ Single-channel *waveforms* augmentations for *speech recognition* models.
 * Normalization
 ---
 <a href="https://github.com/waveletdeboshir/speechaugs/blob/master/examples/Augmentations_Example.ipynb"> **Colab Example**</a>
-You can see examples of all augmentations and listen to resulting audios on <a href="https://github.com/waveletdeboshir/speechaugs/blob/master/examples/Augmentations_Example.ipynb"> this page</a> with Colab notebook.
+You can see examples of all augmentations and listen to resulting audios on <a href="https://github.com/waveletdeboshir/speechaugs/blob/master/examples/Augmentations_Example.ipynb"> this</a> or <a href="https://colab.research.google.com/drive/1o5JhNjG_JdABlIYXVBJWoXF3ac_KBww9?usp=sharing">this page</a> with Colab notebook.
 ***
 ## Installation
 `pip install speechaugs`
