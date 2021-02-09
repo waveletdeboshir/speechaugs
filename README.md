@@ -108,7 +108,7 @@ Change loudness of intervals of a waveform. For example, in the figure below ini
 </p>
 
 ## Normalization
-Normalize a waveform with choosen method ("minmax", "max" or "meanstd")
+Normalize a waveform with chosen method ("minmax", "max" or "meanstd")
 
 ***
 ## Usage example (with default parameters)
