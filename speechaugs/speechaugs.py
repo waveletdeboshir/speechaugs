@@ -458,6 +458,7 @@ class Normalization(BaseWaveformTransform):
 class VTLP(BaseWaveformTransform):
     """
        http://www.cs.toronto.edu/~hinton/absps/perturb.pdf
+       https://github.com/makcedward/nlpaug
 
        Apply vocal tract length perturbation to single-channel waveform
 
